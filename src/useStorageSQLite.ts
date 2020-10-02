@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Capacitor, Plugins } from '@capacitor/core';
 import { AvailableResult, notAvailable } from './util/models';
 import { isFeatureAvailable, featureNotAvailableError } from './util/feature-check';
-import * as CDSSPlugin from 'capacitor-data-storage-sqlite';
+import 'capacitor-data-storage-sqlite';
 
 
 interface StorageSQLiteResult extends AvailableResult {
@@ -27,8 +27,7 @@ export const availableFeatures = {
 export function useStorageSQLite(): StorageSQLiteResult {
     const { CapacitorDataStorageSqlite } = Plugins;
     const platform = Capacitor.getPlatform();
-    const storageSQLite = platform === "ios" || platform === "android" ? CapacitorDataStorageSqlite :
-        platform === "electron" ? CDSSPlugin.CapacitorDataStorageSqliteElectron : CDSSPlugin.CapacitorDataStorageSqlite;
+    const storageSQLite:any = CapacitorDataStorageSqlite;
     if (!availableFeatures.useStorageSQLite) {
         return {
             openStore: featureNotAvailableError,
