@@ -17,6 +17,7 @@ interface StorageSQLiteResult extends AvailableResult {
     isKey: (key: string) => Promise<boolean>;
     getAllKeys: () => Promise<string[]>;
     getAllValues: () => Promise<string[]>;
+    getFilterValues: (filter: string) => Promise<string[]>;
     getAllKeysValues: () => Promise<any[]>;
     deleteStore: (options:any) => Promise<boolean>;
 }
@@ -39,6 +40,7 @@ export function useStorageSQLite(): StorageSQLiteResult {
             isKey: featureNotAvailableError,
             getAllKeys: featureNotAvailableError,
             getAllValues: featureNotAvailableError,
+            getFilterValues: featureNotAvailableError,
             getAllKeysValues: featureNotAvailableError,
             deleteStore: featureNotAvailableError,
             ...notAvailable
@@ -133,6 +135,15 @@ export function useStorageSQLite(): StorageSQLiteResult {
         }
         return [];
     }, []);
+    const getFilterValues = useCallback(async (filter: string) => {
+        const r = await storageSQLite.filtervalues({ filter });
+        if(r) {
+            if(r.values) {
+                return r.values;
+            }
+        }
+        return [];
+    }, []);
     const getAllKeysValues = useCallback(async () => {
         const r = await storageSQLite.keysvalues();
         if(r) {
@@ -143,7 +154,8 @@ export function useStorageSQLite(): StorageSQLiteResult {
         return [];
     }, []);
     const deleteStore = useCallback(async (options: any) => {
-        const database: string = options.database ? options.database : "storage";
+        const database: string = options.database ? options.database
+                                                  : "storage";
         const r = await storageSQLite.deleteStore({database});
         if(r) {
             if( typeof r.result != 'undefined') {
@@ -152,7 +164,8 @@ export function useStorageSQLite(): StorageSQLiteResult {
         }
         return false;
     }, []);    
-        
-    return { openStore, setTable, getItem, setItem, removeItem, clear, isKey,
-        getAllKeys, getAllValues,getAllKeysValues, deleteStore, isAvailable: true };
+
+    return { openStore, setTable, getItem, setItem, removeItem, clear,
+        isKey, getAllKeys, getAllValues, getFilterValues,
+        getAllKeysValues, deleteStore, isAvailable: true };
 }

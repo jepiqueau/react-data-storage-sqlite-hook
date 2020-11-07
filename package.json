@@ -45,14 +45,14 @@
   "peerDependencies": {
     "react": "^16.13.1",
     "@capacitor/core": "^2.4.2",
-    "capacitor-data-storage-sqlite": "^2.4.2-1"
+    "capacitor-data-storage-sqlite": "^2.4.2"
   },
   "devDependencies": {
     "@capacitor/core": "^2.4.2",
     "@testing-library/react-hooks": "^3.4.2",
     "@types/jest": "^24.0.23",
     "@types/react-test-renderer": "^16.9.3",
-    "capacitor-data-storage-sqlite": "^2.4.2-1",
+    "capacitor-data-storage-sqlite": "^2.4.2",
     "conventional-changelog": "^3.1.4",
     "jest": "^24.9.0",
     "jest-environment-jsdom-fourteen": "^0.1.0",
