@@ -4,7 +4,7 @@
 <p align="center"><strong><code>react-data-storage-sqlite-hook</code></strong></p>
 <br>
 <p align="center">
-    <img src="https://img.shields.io/maintenance/yes/2020?style=flat-square" />
+    <img src="https://img.shields.io/maintenance/yes/2021?style=flat-square" />
     <a href="https://www.npmjs.com/package/react-data-storage-sqlite-hook"><img src="https://img.shields.io/npm/l/react-data-storage-sqlite-hook?style=flat-square" /></a>
 <br>
   <a href="https://www.npmjs.com/package/react-data-storage-sqlite-hook"><img src="https://img.shields.io/npm/dw/react-data-storage-sqlite-hook?style=flat-square" /></a>

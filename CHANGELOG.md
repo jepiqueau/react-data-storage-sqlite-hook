@@ -1,3 +1,11 @@
+## 0.0.4 (2021-01-06)
+
+### Chores
+
+- @capacitor/core: update 2.4.5
+- react: 17.0.1
+- capacitor-data-storage-sqlite: 2.4.5
+
 ## 0.0.3 (2020-11-08)
 
 ### Bug Fixes
