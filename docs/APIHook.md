@@ -92,14 +92,15 @@ Open a store
 ### closeStore(...)
 
 ```typescript
-closeStore(database: string) => Promise<void>
+closeStore(options: { database?: string; }) => Promise<void>
 ```
 
 Close a store
+Not implemented for Web platform
 
-| Param          | Type                | Description |
-| -------------- | ------------------- | ----------- |
-| **`database`** | <code>string</code> | : string    |
+| Param         | Type                                | Description           |
+| ------------- | ----------------------------------- | --------------------- |
+| **`options`** | <code>{ database?: string; }</code> | : {database?: string} |
 
 **Since:** 1.0.0
 
@@ -109,14 +110,15 @@ Close a store
 ### isStoreOpen(...)
 
 ```typescript
-isStoreOpen(database: string) => Promise<boolean>
+isStoreOpen(options: { database?: string; }) => Promise<boolean>
 ```
 
 Check if a store is open
+Not implemented for Web platform
 
-| Param          | Type                | Description |
-| -------------- | ------------------- | ----------- |
-| **`database`** | <code>string</code> | : string    |
+| Param         | Type                                | Description           |
+| ------------- | ----------------------------------- | --------------------- |
+| **`options`** | <code>{ database?: string; }</code> | : {database?: string} |
 
 **Returns:** <code>Promise&lt;boolean&gt;</code>
 
@@ -128,14 +130,15 @@ Check if a store is open
 ### isStoreExists(...)
 
 ```typescript
-isStoreExists(database: string) => Promise<boolean>
+isStoreExists(options: { database?: string; }) => Promise<boolean>
 ```
 
 Check if a store exists
+Not implemented for Web platform
 
-| Param          | Type                | Description |
-| -------------- | ------------------- | ----------- |
-| **`database`** | <code>string</code> | : string    |
+| Param         | Type                                | Description           |
+| ------------- | ----------------------------------- | --------------------- |
+| **`options`** | <code>{ database?: string; }</code> | : {database?: string} |
 
 **Returns:** <code>Promise&lt;boolean&gt;</code>
 
@@ -147,14 +150,15 @@ Check if a store exists
 ### deleteStore(...)
 
 ```typescript
-deleteStore(database: string) => Promise<void>
+deleteStore(options: { database?: string; }) => Promise<void>
 ```
 
 Delete a store
+Not implemented for Web platform
 
-| Param          | Type                | Description |
-| -------------- | ------------------- | ----------- |
-| **`database`** | <code>string</code> | : string    |
+| Param         | Type                                | Description           |
+| ------------- | ----------------------------------- | --------------------- |
+| **`options`** | <code>{ database?: string; }</code> | : {database?: string} |
 
 **Since:** 0.0.1
 
@@ -331,14 +335,15 @@ Get the data key/value pair list
 ### isTable(...)
 
 ```typescript
-isTable(table: string) => Promise<boolean>
+isTable(options: { table?: string; }) => Promise<boolean>
 ```
 
 Check if a table exists
+Not implemented for Web platform
 
-| Param       | Type                | Description |
-| ----------- | ------------------- | ----------- |
-| **`table`** | <code>string</code> | : string    |
+| Param         | Type                             |
+| ------------- | -------------------------------- |
+| **`options`** | <code>{ table?: string; }</code> |
 
 **Returns:** <code>Promise&lt;boolean&gt;</code>
 
@@ -354,6 +359,7 @@ getAllTables() => Promise<string[]>
 ```
 
 Get the table list for the current store
+Not implemented for Web platform
 
 **Returns:** <code>Promise&lt;string[]&gt;</code>
 
@@ -365,14 +371,15 @@ Get the table list for the current store
 ### deleteTable(...)
 
 ```typescript
-deleteTable(table: string) => Promise<void>
+deleteTable(options: { table?: string; }) => Promise<void>
 ```
 
 Delete a table
+Not implemented for Web platform
 
-| Param       | Type                | Description |
-| ----------- | ------------------- | ----------- |
-| **`table`** | <code>string</code> | : string    |
+| Param         | Type                             | Description       |
+| ------------- | -------------------------------- | ----------------- |
+| **`options`** | <code>{ table?: string; }</code> | :{table?: string} |
 
 **Since:** 1.0.0
 

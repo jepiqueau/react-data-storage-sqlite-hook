@@ -32,32 +32,36 @@ export interface StorageSQLiteHook extends AvailableResult {
                 encrypted?: boolean, mode?: string}): Promise<void>;
     /**
      * Close a store
-     * @param database: string
+     * Not implemented for Web platform
+     * @param options: {database?: string}
      * @returns Promise<void>
      * @since 1.0.0
      */
-    closeStore(database: string): Promise<void>;
+    closeStore(options: {database?: string}): Promise<void>;
     /**
      * Check if a store is open
-     * @param database: string
+     * Not implemented for Web platform
+     * @param options: {database?: string}
      * @returns Promise<boolean>
      * @since 1.0.0
      */
-    isStoreOpen(database: string): Promise<boolean>;
+    isStoreOpen(options: {database?: string}): Promise<boolean>;
     /**
      * Check if a store exists
-     * @param database: string
+     * Not implemented for Web platform
+     * @param options: {database?: string}
      * @returns Promise<boolean>
      * @since 1.0.0
      */
-    isStoreExists(database: string): Promise<boolean>;
+    isStoreExists(options: {database?: string}): Promise<boolean>;
     /**
      * Delete a store
-     * @param database: string
+     * Not implemented for Web platform
+     * @param options: {database?: string}
      * @returns Promise<void>
      * @since 0.0.1
      */
-    deleteStore(database: string): Promise<void>;
+    deleteStore(options: {database?: string}): Promise<void>;
     /**
      * Set or Add a table to an existing store
      * @param options: capTableStorageOptions
@@ -127,24 +131,27 @@ export interface StorageSQLiteHook extends AvailableResult {
     getAllKeysValues(): Promise<any[]>;
     /**
      * Check if a table exists
-     * @param table: string
+     * Not implemented for Web platform
+     * @param option: {table?: string}
      * @returns Promise<boolean>
      * @since 1.0.0
      */
-    isTable(table: string): Promise<boolean>;
+    isTable(options:{table?: string}): Promise<boolean>;
     /**
      * Get the table list for the current store
+     * Not implemented for Web platform
      * @returns Promise<string[]>
      * @since 1.0.0
      */
     getAllTables(): Promise<string[]>;
     /**
      * Delete a table
-     * @param table: string
+     * Not implemented for Web platform
+     * @param options:{table?: string}
      * @returns Promise<void>
      * @since 1.0.0
      */
-    deleteTable(table: string): Promise<void>;
+    deleteTable(options:{table?: string}): Promise<void>;
 }
 export const availableFeatures = {
     useStorageSQLite: isFeatureAvailable('CapacitorDataStorageSqlite', 'useStorageSQLite')
@@ -183,7 +190,9 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
 
     }, []);
 
-    const closeStore = useCallback(async (database: string) => {
+    const closeStore = useCallback(async (options: any) => {
+        const database: string = options.database ? options.database : "storage";
+        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             await storageSQLite.closeStore({database});
             return Promise.resolve();
@@ -192,7 +201,9 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         }
     }, []);
 
-    const isStoreOpen = useCallback(async (database: string) => {
+    const isStoreOpen = useCallback(async (options: any) => {
+        const database: string = options.database ? options.database : "storage";
+        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             const r = await storageSQLite.isStoreOpen({database});
             if (r) {
@@ -206,7 +217,9 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         }
     }, []);
 
-    const isStoreExists = useCallback(async (database: string) => {
+    const isStoreExists = useCallback(async (options: any) => {
+        const database: string = options.database ? options.database : "storage";
+        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             const r = await storageSQLite.isStoreExists({database});
             if (r) {
@@ -223,6 +236,7 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
     const deleteStore = useCallback(async (options: any) => {
         const database: string = options.database ? options.database
                                                   : "storage";
+        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             await storageSQLite.deleteStore({database});
             return Promise.resolve();
@@ -348,7 +362,9 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         }
     }, []);
 
-    const isTable = useCallback(async (table: string) => {
+    const isTable = useCallback(async (options: any) => {
+        const table: string = options.table ? options.table : "storage_table";
+        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             const r = await storageSQLite.isTable({table});
             if (r) {
@@ -363,6 +379,7 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
     }, []);
 
     const getAllTables = useCallback(async () => {
+        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             const r = await storageSQLite.tables();
             if(r) {
@@ -376,7 +393,9 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         }
     }, []);
 
-    const deleteTable = useCallback(async (table: string) => {
+    const deleteTable = useCallback(async (options: any) => {
+        const table: string = options.table ? options.table : "storage_table";
+        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             await storageSQLite.deleteTable({table});
             return Promise.resolve();

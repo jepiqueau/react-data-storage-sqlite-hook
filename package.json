@@ -1,6 +1,6 @@
 {
   "name": "react-data-storage-sqlite-hook",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.2",
   "description": "React Hook for Capacitor Data Storage SQLite",
   "repository": {
     "type": "git",

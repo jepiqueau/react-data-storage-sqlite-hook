@@ -1,3 +1,9 @@
+## 1.0.0-beta.2 (2021-06-08)
+
+- fix isStoreExists, isStoreOpen, closeStore, deleteStore
+- fix isTable, getAllTables, deleteTable
+- fix README.md
+
 ## 1.0.0-beta.1 (2021-06-08)
 
 ### Chores
