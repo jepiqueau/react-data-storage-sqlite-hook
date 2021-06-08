@@ -112,8 +112,6 @@ Then use the hook from that namespace in your app:
   
 ```
 
-
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):

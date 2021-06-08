@@ -1,3 +1,11 @@
+## 1.0.0-beta.1 (2021-06-08)
+
+### Chores
+
+- @capacitor/core: update 3.0.0
+- react: 17.0.2
+- capacitor-data-storage-sqlite: 3.0.0
+
 ## 0.0.4 (2021-01-06)
 
 ### Chores

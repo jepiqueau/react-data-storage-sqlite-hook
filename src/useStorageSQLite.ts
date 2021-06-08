@@ -1,171 +1,419 @@
 //Inspired from https://github.com/capacitor-community/react-hooks/blob/master/src/storage/
 
-import { useState, useEffect, useCallback } from 'react';
-import { Capacitor, Plugins } from '@capacitor/core';
+import { useCallback } from 'react';
+import { Capacitor} from '@capacitor/core';
 import { AvailableResult, notAvailable } from './util/models';
 import { isFeatureAvailable, featureNotAvailableError } from './util/feature-check';
-import 'capacitor-data-storage-sqlite';
+import { CapacitorDataStorageSqlite } from 'capacitor-data-storage-sqlite';
 
 
-interface StorageSQLiteResult extends AvailableResult {
-    openStore: (options: any) => Promise<boolean>;
-    setTable: (table: string) => Promise<{result: boolean, message: string}>;
-    getItem: (key: string) => Promise<string | null>;
-    setItem: (key: string, value: string) => Promise<void>;
-    removeItem: (key: string) => Promise<boolean>;
-    clear: () => Promise<boolean>;
-    isKey: (key: string) => Promise<boolean>;
-    getAllKeys: () => Promise<string[]>;
-    getAllValues: () => Promise<string[]>;
-    getFilterValues: (filter: string) => Promise<string[]>;
-    getAllKeysValues: () => Promise<any[]>;
-    deleteStore: (options:any) => Promise<boolean>;
+export interface StorageSQLiteHook extends AvailableResult {
+    /**
+     *
+     * @param options: {value:string}
+     * @return Promise<{value:string}>
+     * @since 1.0.0
+     */
+    echo(value: string): Promise<{value:string}>;
+    /**
+     * Get platform
+     * @returns Promise<{platform: string}>
+     * @since 1.0.0
+     */
+    getPlatform(): Promise<{platform: string}>;
+     /**
+     * Open a store
+     * @param options: {database?: string, table?: string,
+     *                  encrypted?: boolean, mode?: string}
+     * @returns Promise<void>
+     * @since 0.0.1
+     */
+    openStore(options: {database?: string, table?: string,
+                encrypted?: boolean, mode?: string}): Promise<void>;
+    /**
+     * Close a store
+     * @param database: string
+     * @returns Promise<void>
+     * @since 1.0.0
+     */
+    closeStore(database: string): Promise<void>;
+    /**
+     * Check if a store is open
+     * @param database: string
+     * @returns Promise<boolean>
+     * @since 1.0.0
+     */
+    isStoreOpen(database: string): Promise<boolean>;
+    /**
+     * Check if a store exists
+     * @param database: string
+     * @returns Promise<boolean>
+     * @since 1.0.0
+     */
+    isStoreExists(database: string): Promise<boolean>;
+    /**
+     * Delete a store
+     * @param database: string
+     * @returns Promise<void>
+     * @since 0.0.1
+     */
+    deleteStore(database: string): Promise<void>;
+    /**
+     * Set or Add a table to an existing store
+     * @param options: capTableStorageOptions
+     * @returns Promise<void>
+     * @since 0.0.1
+    */
+    setTable(table: string): Promise<void>;
+    /**
+     * Retrieve a data value for a given data key
+     * @param options: capDataStorageOptions
+     * @returns Promise<capValueResult>
+     * @since 0.0.1
+     */
+    getItem(key: string): Promise<string | null>;
+    /**
+     * Store a data with given key and value
+     * @param key: string
+     * @param value: string
+     * @returns Promise<void>
+     * @since 0.0.1
+     */
+    setItem(key: string, value: string): Promise<void>;
+    /**
+     * Remove a data with given key
+     * @param key: string
+     * @returns Promise<void>
+     * @since 0.0.1
+     */
+    removeItem(key: string): Promise<void>;
+    /**
+     * Clear the Data Store (delete all keys)
+     * @returns Promise<void>
+     * @since 0.0.1
+     */
+    clear(): Promise<void>;
+    /**
+     * Check if a data key exists
+     * @param key: string
+     * @returns Promise<boolean>
+     * @since 0.0.1
+     */
+    isKey(key: string): Promise<boolean>;
+    /**
+     * Get the data key list
+     * @returns Promise<string[]>
+     * @since 0.0.1
+     */
+    getAllKeys(): Promise<string[]>;
+    /**
+     * Get the data value list
+     * @returns Promise<string[]>
+     * @since 0.0.1
+     */
+    getAllValues(): Promise<string[]>;
+    /**
+     * Get the data value list for filter keys
+     * @param filter: string
+     * @returns Promise<string[]>
+     * @since 0.0.2
+     */
+    getFilterValues(filter: string): Promise<string[]>;
+    /**
+     * Get the data key/value pair list
+     * @returns Promise<capKeysValuesResult>
+     * @since 0.0.1
+     */
+    getAllKeysValues(): Promise<any[]>;
+    /**
+     * Check if a table exists
+     * @param table: string
+     * @returns Promise<boolean>
+     * @since 1.0.0
+     */
+    isTable(table: string): Promise<boolean>;
+    /**
+     * Get the table list for the current store
+     * @returns Promise<string[]>
+     * @since 1.0.0
+     */
+    getAllTables(): Promise<string[]>;
+    /**
+     * Delete a table
+     * @param table: string
+     * @returns Promise<void>
+     * @since 1.0.0
+     */
+    deleteTable(table: string): Promise<void>;
 }
 export const availableFeatures = {
     useStorageSQLite: isFeatureAvailable('CapacitorDataStorageSqlite', 'useStorageSQLite')
 }
 
-export function useStorageSQLite(): StorageSQLiteResult {
-    const { CapacitorDataStorageSqlite } = Plugins;
+export const useStorageSQLite = (): StorageSQLiteHook => {
     const platform = Capacitor.getPlatform();
     const storageSQLite:any = CapacitorDataStorageSqlite;
-    if (!availableFeatures.useStorageSQLite) {
-        return {
-            openStore: featureNotAvailableError,
-            setTable: featureNotAvailableError,
-            getItem: featureNotAvailableError,
-            setItem: featureNotAvailableError,
-            removeItem: featureNotAvailableError,
-            clear: featureNotAvailableError,
-            isKey: featureNotAvailableError,
-            getAllKeys: featureNotAvailableError,
-            getAllValues: featureNotAvailableError,
-            getFilterValues: featureNotAvailableError,
-            getAllKeysValues: featureNotAvailableError,
-            deleteStore: featureNotAvailableError,
-            ...notAvailable
-        };
-    }
+    const echo = useCallback(async (value: string): Promise<any> => {
+        if(value) {
+            const r = await storageSQLite.echo(value);
+            if(r) {
+                return r;
+            } else {
+                return {value: null};
+            }
+        } else {
+            return {value: null};
+        }
+    }, []);
+    const getPlatform = useCallback(async (): Promise<any> => {
+        return {platform: platform};
+    }, [platform]);
+
     const openStore = useCallback(async (options: any) => {
         const database: string = options.database ? options.database : "storage";
         const table: string = options.table ? options.table : "storage_table";
         const encrypted: boolean = options.encrypted ? options.encrypted : false;
         const mode:string = options.mode ? options.mode : "no-encryption";
-        const r = await storageSQLite.openStore({database,table,encrypted,mode});
-        if(r) {
-            if( typeof r.result != 'undefined') {
-                return r.result;
-            }
+        try {
+            await storageSQLite.openStore({database,table,encrypted,mode});
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
         }
-        return false;
+
     }, []);
 
-    const setTable = useCallback(async (table: string) => {
-        table = table.length > 0 ? table : "storage_table";
-        const r = await storageSQLite.setTable({table});
-        if(r) {
-            if( r.message && r.message.length > 0) {
-                return {result: false, message: r.message};
-            }
-            if( typeof r.result != 'undefined') {
-                if (r.result) {
-                    return { result: r.result, message: ""};
-                }
-            }
+    const closeStore = useCallback(async (database: string) => {
+        try {
+            await storageSQLite.closeStore({database});
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
         }
-        return {result: false, message: "Error in setTable"};
     }, []);
 
-    const getItem = useCallback(async (key: string) => {
-        const v = await storageSQLite.get({ key });
-        if (v) {
-            if(v.value) {
-                return v.value;
+    const isStoreOpen = useCallback(async (database: string) => {
+        try {
+            const r = await storageSQLite.isStoreOpen({database});
+            if (r) {
+                if(r.result) {
+                    return Promise.resolve(r.result);
+                }          
             }
+            return Promise.reject(`no returned value for ${database}`);
+        } catch (err) {
+            return Promise.reject(err);
         }
-        return null;
-      }, []);
+    }, []);
 
-    const setItem = useCallback(async (key: string, value: string) => {
-        await storageSQLite.set({ key, value: value });
-        return
-    }, []);
-    const removeItem = useCallback(async (key: string) => {
-        const r = await storageSQLite.remove({ key });
-        if(r) {
-            if( typeof r.result != 'undefined') {
-                return r.result;
+    const isStoreExists = useCallback(async (database: string) => {
+        try {
+            const r = await storageSQLite.isStoreExists({database});
+            if (r) {
+                if(r.result) {
+                    return Promise.resolve(r.result);
+                }          
             }
+            return Promise.reject(`no returned value for ${database}`);
+        } catch (err) {
+            return Promise.reject(err);
         }
-        return false;
     }, []);
-    const clear = useCallback(async () => {
-        const r = await storageSQLite.clear();
-        if(r) {
-            if( typeof r.result != 'undefined') {
-                return r.result;
-            }
-        }
-        return false;
-    }, []);
-    const isKey = useCallback(async (key: string) => {
-        const r = await storageSQLite.iskey({ key });
-        if(r) {
-            if( typeof r.result != 'undefined') {
-                return r.result;
-            }
-        }
-        return false;
-    }, []);
-    const getAllKeys = useCallback(async () => {
-        const r = await storageSQLite.keys();
-        if(r) {
-            if(r.keys) {
-                return r.keys;
-            }
-        }
-        return [];
-    }, []);
-    const getAllValues = useCallback(async () => {
-        const r = await storageSQLite.values();
-        if(r) {
-            if(r.values) {
-                return r.values;
-            }
-        }
-        return [];
-    }, []);
-    const getFilterValues = useCallback(async (filter: string) => {
-        const r = await storageSQLite.filtervalues({ filter });
-        if(r) {
-            if(r.values) {
-                return r.values;
-            }
-        }
-        return [];
-    }, []);
-    const getAllKeysValues = useCallback(async () => {
-        const r = await storageSQLite.keysvalues();
-        if(r) {
-            if(r.keysvalues) {
-                return r.keysvalues;
-            }
-        }
-        return [];
-    }, []);
+
     const deleteStore = useCallback(async (options: any) => {
         const database: string = options.database ? options.database
                                                   : "storage";
-        const r = await storageSQLite.deleteStore({database});
-        if(r) {
-            if( typeof r.result != 'undefined') {
-                return r.result;
-            }
+        try {
+            await storageSQLite.deleteStore({database});
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
         }
-        return false;
     }, []);    
 
-    return { openStore, setTable, getItem, setItem, removeItem, clear,
-        isKey, getAllKeys, getAllValues, getFilterValues,
-        getAllKeysValues, deleteStore, isAvailable: true };
+    const setTable = useCallback(async (table: string) => {
+        table = table.length > 0 ? table : "storage_table";
+        try {
+            await storageSQLite.setTable({table});
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+
+    const getItem = useCallback(async (key: string) => {
+        try {
+            const v = await storageSQLite.get({ key });
+            if (v) {
+                if(v.value) {
+                    return Promise.resolve(v.value);
+                } else {
+                    return Promise.reject(`no returned value for key ${key}`);
+                }
+            } else {
+                return Promise.reject(`no returned value for key ${key}`);
+            }
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+
+    const setItem = useCallback(async (key: string, value: string) => {
+        try {
+            await storageSQLite.set({ key, value: value });
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const removeItem = useCallback(async (key: string) => {
+        try {
+            await storageSQLite.remove({ key });
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const clear = useCallback(async () => {
+        try {
+            const r = await storageSQLite.clear();
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const isKey = useCallback(async (key: string) => {
+        try {
+            const r = await storageSQLite.iskey({ key });
+            if(r) {
+                if( typeof r.result != 'undefined') {
+                    return Promise.resolve(r.result) ;
+                }
+            }
+            return Promise.resolve(false) ;        
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const getAllKeys = useCallback(async () => {
+        try {
+            const r = await storageSQLite.keys();
+            if(r) {
+                if(r.keys) {
+                    return Promise.resolve(r.keys);
+                }
+            }
+            return Promise.resolve([]);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const getAllValues = useCallback(async () => {
+        try {
+            const r = await storageSQLite.values();
+            if(r) {
+                if(r.values) {
+                    return Promise.resolve(r.values);
+                }
+            }
+            return Promise.resolve([]);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const getFilterValues = useCallback(async (filter: string) => {
+        try {
+            const r = await storageSQLite.filtervalues({ filter });
+            if(r) {
+                if(r.values) {
+                    return Promise.resolve(r.values);
+                }
+            }
+            return Promise.resolve([]);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const getAllKeysValues = useCallback(async () => {
+        try {
+            const r = await storageSQLite.keysvalues();
+            if(r) {
+                if(r.keysvalues) {
+                    return Promise.resolve(r.keysvalues);
+                }
+            }
+            return Promise.resolve([]);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+
+    const isTable = useCallback(async (table: string) => {
+        try {
+            const r = await storageSQLite.isTable({table});
+            if (r) {
+                if(r.result) {
+                    return Promise.resolve(r.result);
+                }          
+            }
+            return Promise.reject(`no returned value for ${table}`);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+
+    const getAllTables = useCallback(async () => {
+        try {
+            const r = await storageSQLite.tables();
+            if(r) {
+                if(r.tables) {
+                    return Promise.resolve(r.tables);
+                }
+            }
+            return Promise.resolve([]);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+
+    const deleteTable = useCallback(async (table: string) => {
+        try {
+            await storageSQLite.deleteTable({table});
+            return Promise.resolve();
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    if (!availableFeatures.useStorageSQLite) {
+        return {
+            echo: featureNotAvailableError,
+            getPlatform: featureNotAvailableError,
+            openStore: featureNotAvailableError,
+            closeStore: featureNotAvailableError,
+            isStoreOpen: featureNotAvailableError,
+            isStoreExists: featureNotAvailableError,
+            deleteStore: featureNotAvailableError,
+            setTable: featureNotAvailableError,
+            setItem: featureNotAvailableError,
+            getItem: featureNotAvailableError,
+            isKey: featureNotAvailableError,
+            getAllKeys: featureNotAvailableError,
+            getAllValues: featureNotAvailableError,
+            getFilterValues: featureNotAvailableError,
+            getAllKeysValues: featureNotAvailableError,
+            removeItem: featureNotAvailableError,
+            clear: featureNotAvailableError,
+            isTable: featureNotAvailableError,
+            getAllTables: featureNotAvailableError,
+            deleteTable: featureNotAvailableError,
+            ...notAvailable
+        };
+    } else {
+
+        return { echo, getPlatform, openStore, closeStore, isStoreOpen, isStoreExists,
+            deleteStore, setTable, getItem, setItem, removeItem, clear,
+            isKey, getAllKeys, getAllValues, getFilterValues,
+            getAllKeysValues, isTable, getAllTables, deleteTable, isAvailable: true
+        };
+    }
 }

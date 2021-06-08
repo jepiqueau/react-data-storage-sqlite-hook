@@ -1,6 +1,6 @@
 {
   "name": "react-data-storage-sqlite-hook",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "React Hook for Capacitor Data Storage SQLite",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   "typings": "dist/esm/index.d.ts",
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "npm run clean && npm run transpile && npm run copy-package",
+    "build": "npm run clean && npm run transpile && npm run copy-package && npm run docgen",
     "copy-package": "cp ./package.json ./dist/package.json",
     "package": "npm pack ./dist",
     "deploy": "npm run build && npm test && np",
@@ -25,6 +25,7 @@
     "transpile": "tsc --module ES2015 --target es2017 --outDir dist",
     "clean": "rimraf dist",
     "build-old": "node scripts/build.js",
+    "docgen": "docgen --api StorageSQLiteHook --output-readme docs/APIHook.md",
     "test": "jest"
   },
   "eslintConfig": {
@@ -43,29 +44,28 @@
     ]
   },
   "peerDependencies": {
-    "react": "^17.0.1",
-    "@capacitor/core": "^2.4.5",
-    "capacitor-data-storage-sqlite": "^2.4.5"
+    "@capacitor/core": "^3.0.0",
+    "capacitor-data-storage-sqlite": "^3.0.0",
+    "react": "^17.0.2"
   },
   "devDependencies": {
-    "@capacitor/core": "^2.4.5",
-    "@testing-library/react-hooks": "^3.4.2",
-    "@types/jest": "^24.0.23",
-    "@types/react-test-renderer": "^17.0.0",
-    "capacitor-data-storage-sqlite": "^2.4.5",
-    "conventional-changelog": "^3.1.4",
+    "@capacitor/core": "^3.0.0",
+    "@capacitor/docgen": "^0.0.16",
+    "@testing-library/react-hooks": "^5.1.2",
+    "@types/jest": "^26.0.23",
+    "@types/react-test-renderer": "^17.0.1",
+    "capacitor-data-storage-sqlite": "3.0.0",
+    "conventional-changelog": "^3.1.24",
     "jest": "^26.5.2",
     "jest-environment-jsdom-fourteen": "^0.1.0",
-    "np": "^7.2.0",
-    "react": "^17.0.1",
+    "np": "^7.5.0",
+    "react": "^17.0.2",
     "react-app-polyfill": "^2.0.0",
-    "react-test-renderer": "^17.0.1",
-    "replace": "^1.1.0",
+    "react-test-renderer": "^17.0.2",
+    "replace": "^1.2.0",
     "rimraf": "^3.0.2",
-    "ts-jest": "^26.2.0",
-    "tslint": "^6.1.2",
-    "tslint-ionic-rules": "0.0.21",
-    "typedoc": "^0.18.0",
+    "ts-jest": "^26.4.4",
+    "typedoc": "^0.20.36",
     "typescript": "^4.0.5",
     "uglify-js": "^3.2.0"
   },
