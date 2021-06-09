@@ -1,4 +1,12 @@
+## 1.0.0 (2021-06-09)
+
+### Bug Fixes
+
+- fix isStoreExists, isStoreOpen, isKey, isTable
+
 ## 1.0.0-beta.2 (2021-06-08)
+
+### Bug Fixes
 
 - fix isStoreExists, isStoreOpen, closeStore, deleteStore
 - fix isTable, getAllTables, deleteTable

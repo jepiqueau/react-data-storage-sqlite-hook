@@ -3,6 +3,7 @@
 <h3 align="center">React Hook for capacitor-data-storage-sqlite plugin</h3>
 <p align="center"><strong><code>react-data-storage-sqlite-hook</code></strong></p>
 <br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3</strong></p><br>
 <p align="center">
     <img src="https://img.shields.io/maintenance/yes/2021?style=flat-square" />
     <a href="https://www.npmjs.com/package/react-data-storage-sqlite-hook"><img src="https://img.shields.io/npm/l/react-data-storage-sqlite-hook?style=flat-square" /></a>
@@ -26,7 +27,7 @@
 
 ```bash
 npm install --save capacitor-data-storage-sqlite
-npm install --save-dev react-data-storage-sqlite-hook@next
+npm install --save-dev react-data-storage-sqlite-hook
 ```
 
 ## Applications demonstrating the use of the plugin and the react hook
@@ -43,6 +44,7 @@ Import the hook from its own path:
 
 ```js
  import { useStorageSQLite } from 'react-data-storage-sqlite-hook'
+import { Dialog } from '@capacitor/dialog';
 ```
 
 Then use the hook from that namespace in your app:
@@ -167,9 +169,43 @@ Then use the hook from that namespace in your app:
         }
         const platform = await getPlatform();
         if(platform.platform !== "web") {
-          const isStore = await isStoreExists({})
+          let isStore = await isStoreExists({})
+          setLog((log) => log.concat(` > isStoreExists ${isStore} \n`));
+          if(!isStore) {
+            errMess.current = `isStoreExists 1 failed`;
+            return false;
+          }
+          const isOpen = await isStoreOpen({})
+          setLog((log) => log.concat(` > isStoreOpen ${isOpen} \n`));
+          if(!isOpen) {
+            errMess.current = `isStoreOpen failed`;
+            return false;
+          }
+          let isTableExists = await isTable({table: "testtable"})
+          setLog((log) => log.concat(` > isTableExists ${isTableExists} \n`));
+          if(!isTableExists) {
+            errMess.current = `isTable 1  failed`;
+            return false;
+          }
+          const tables: string[] = await getAllTables();
+          setLog((log) => log.concat(` > getAllTables ${tables.length} \n`));
+          await deleteTable({table: "testtable"});
+          isTableExists = await isTable({table: "testtable"})
+          setLog((log) => log.concat(` > isTableExists ${isTableExists} \n`));
+          if(isTableExists) {
+            errMess.current = `isTable 2 failed`;
+            return false;
+          }
+          await closeStore({});
+          await deleteStore({});
+          console.log("after deleteStore")
+          isStore = await isStoreExists({})
+          console.log("after isStoreExists")
+          if(isStore) {
+            errMess.current = `isStoreExists 2 failed`;
+            return false;
+          }
 
-        
         }
         setLog((log) => log.concat("* Tab 2 Page End Test successful\n")); 
         return true;

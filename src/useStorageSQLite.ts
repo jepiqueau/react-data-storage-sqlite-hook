@@ -197,6 +197,7 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
             await storageSQLite.closeStore({database});
             return Promise.resolve();
         } catch (err) {
+            console.log(`error: ${err}`)
             return Promise.reject(err);
         }
     }, []);
@@ -207,11 +208,11 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         try {
             const r = await storageSQLite.isStoreOpen({database});
             if (r) {
-                if(r.result) {
-                    return Promise.resolve(r.result);
-                }          
+                if( typeof r.result != 'undefined') {
+                    return Promise.resolve(r.result) ;
+                }
             }
-            return Promise.reject(`no returned value for ${database}`);
+            return Promise.resolve(false) ;        
         } catch (err) {
             return Promise.reject(err);
         }
@@ -223,11 +224,11 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         try {
             const r = await storageSQLite.isStoreExists({database});
             if (r) {
-                if(r.result) {
-                    return Promise.resolve(r.result);
-                }          
+                if( typeof r.result != 'undefined') {
+                    return Promise.resolve(r.result) ;
+                }
             }
-            return Promise.reject(`no returned value for ${database}`);
+            return Promise.resolve(false) ;        
         } catch (err) {
             return Promise.reject(err);
         }
@@ -299,6 +300,7 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
     const isKey = useCallback(async (key: string) => {
         try {
             const r = await storageSQLite.iskey({ key });
+
             if(r) {
                 if( typeof r.result != 'undefined') {
                     return Promise.resolve(r.result) ;
@@ -368,11 +370,11 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         try {
             const r = await storageSQLite.isTable({table});
             if (r) {
-                if(r.result) {
-                    return Promise.resolve(r.result);
-                }          
+                if( typeof r.result != 'undefined') {
+                    return Promise.resolve(r.result) ;
+                }
             }
-            return Promise.reject(`no returned value for ${table}`);
+            return Promise.resolve(false) ;        
         } catch (err) {
             return Promise.reject(err);
         }
