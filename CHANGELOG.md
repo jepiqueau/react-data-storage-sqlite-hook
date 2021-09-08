@@ -1,3 +1,15 @@
+## 1.1.0 (2021-06-08)
+
+### Chores
+
+- @capacitor/core: update 3.2.0
+- capacitor-data-storage-sqlite: 3.2.0
+
+### Added Features
+
+- add importFromJson, isJsonValid, exportToJson methods
+- add isTable, tables methods to Web platform
+
 ## 1.0.0 (2021-06-09)
 
 ### Bug Fixes

@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Capacitor} from '@capacitor/core';
 import { AvailableResult, notAvailable } from './util/models';
 import { isFeatureAvailable, featureNotAvailableError } from './util/feature-check';
-import { CapacitorDataStorageSqlite } from 'capacitor-data-storage-sqlite';
+import { CapacitorDataStorageSqlite, JsonStore } from 'capacitor-data-storage-sqlite';
 
 
 export interface StorageSQLiteHook extends AvailableResult {
@@ -152,6 +152,27 @@ export interface StorageSQLiteHook extends AvailableResult {
      * @since 1.0.0
      */
     deleteTable(options:{table?: string}): Promise<void>;
+  /**
+   * Import a database From a JSON
+   * @param jsonstring string
+   * @returns Promise<number>
+   * @since 1.1.0
+   */
+   importFromJson(jsonstring: string): Promise<number>;
+  /**
+   * Check the validity of a JSON Object
+   * @param jsonstring string
+   * @returns Promise<boolean>
+   * @since 1.1.0
+   */
+  isJsonValid(jsonstring: string): Promise<boolean>;
+  /**
+   * Export the given database to a JSON Object
+   * @returns Promise<JsonStore>
+   * @since 1.1.0
+   */
+  exportToJson(): Promise<JsonStore>;
+
 }
 export const availableFeatures = {
     useStorageSQLite: isFeatureAvailable('CapacitorDataStorageSqlite', 'useStorageSQLite')
@@ -259,12 +280,8 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
     const getItem = useCallback(async (key: string) => {
         try {
             const v = await storageSQLite.get({ key });
-            if (v) {
-                if(v.value) {
+            if (v && v.value) {
                     return Promise.resolve(v.value);
-                } else {
-                    return Promise.reject(`no returned value for key ${key}`);
-                }
             } else {
                 return Promise.reject(`no returned value for key ${key}`);
             }
@@ -366,7 +383,6 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
 
     const isTable = useCallback(async (options: any) => {
         const table: string = options.table ? options.table : "storage_table";
-        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             const r = await storageSQLite.isTable({table});
             if (r) {
@@ -381,7 +397,6 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
     }, []);
 
     const getAllTables = useCallback(async () => {
-        if(platform === "web") return Promise.reject("Not implemented for Web platform");
         try {
             const r = await storageSQLite.tables();
             if(r) {
@@ -405,6 +420,46 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
             return Promise.reject(err);
         }
     }, []);
+    const importFromJson = useCallback(async (jsonstring: string) => {
+        try {
+            const r = await storageSQLite.importFromJson({ jsonstring });
+            if(r) {
+                if(r.changes) {
+                    return Promise.resolve(r.changes);
+                }
+            }
+            return Promise.resolve(-1);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const isJsonValid = useCallback(async (jsonstring: string) => {
+        try {
+            const r = await storageSQLite.isJsonValid({jsonstring});
+            if (r) {
+                if( typeof r.result != 'undefined') {
+                    return Promise.resolve(r.result) ;
+                }
+            }
+            return Promise.resolve(false) ;        
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+    const exportToJson = useCallback(async () => {
+        try {
+            const r = await storageSQLite.exportToJson();
+            if(r) {
+                if(r.export) {
+                    return Promise.resolve(r.export);
+                }
+            }
+            return Promise.resolve({});
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }, []);
+
     if (!availableFeatures.useStorageSQLite) {
         return {
             echo: featureNotAvailableError,
@@ -427,6 +482,9 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
             isTable: featureNotAvailableError,
             getAllTables: featureNotAvailableError,
             deleteTable: featureNotAvailableError,
+            importFromJson: featureNotAvailableError,
+            exportToJson: featureNotAvailableError,
+            isJsonValid: featureNotAvailableError,
             ...notAvailable
         };
     } else {
@@ -434,7 +492,8 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
         return { echo, getPlatform, openStore, closeStore, isStoreOpen, isStoreExists,
             deleteStore, setTable, getItem, setItem, removeItem, clear,
             isKey, getAllKeys, getAllValues, getFilterValues,
-            getAllKeysValues, isTable, getAllTables, deleteTable, isAvailable: true
+            getAllKeysValues, isTable, getAllTables, deleteTable,
+            importFromJson, exportToJson, isJsonValid, isAvailable: true
         };
     }
 }

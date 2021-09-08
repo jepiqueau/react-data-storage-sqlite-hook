@@ -60,10 +60,11 @@ Then use the hook from that namespace in your app:
       });
   };
 
-  const {echo, getPlatform, openStore, closeStore, isStoreOpen, isStoreExists,
-    deleteStore, getItem, setItem, getAllKeys, getAllValues,
-    getFilterValues, getAllKeysValues, isKey, setTable,
-    removeItem, clear, isTable, getAllTables, deleteTable, isAvailable} = useStorageSQLite();
+  const {echo, getPlatform, openStore, closeStore, isStoreOpen,
+        isStoreExists, deleteStore, getItem, setItem, getAllKeys,
+        getAllValues, getFilterValues, getAllKeysValues, isKey,
+        setTable, removeItem, clear, isTable, getAllTables, deleteTable,
+        isJsonValid, importFromJson, exportToJson, isAvailable} = useStorageSQLite();
   useEffect(() => {
     const testSimpleStore= async (): Promise<boolean> => {
       setLog((log) => log.concat("* Tab 2 Page Start Test\n")); 
@@ -235,7 +236,7 @@ Then use the hook from that namespace in your app:
     deleteStore, getItem, setItem, getAllKeys, getAllValues,
     getFilterValues, getAllKeysValues, isKey, setTable,
     removeItem, clear, isTable, getAllTables, deleteTable,
-    isAvailable, errMess]);   
+    isJsonValid, importFromJson, exportToJson, isAvailable, errMess]);   
   
 ```
 

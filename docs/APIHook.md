@@ -32,6 +32,10 @@
 * [`isTable(...)`](#istable)
 * [`getAllTables()`](#getalltables)
 * [`deleteTable(...)`](#deletetable)
+* [`importFromJson(...)`](#importfromjson)
+* [`isJsonValid(...)`](#isjsonvalid)
+* [`exportToJson()`](#exporttojson)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -384,5 +388,86 @@ Not implemented for Web platform
 **Since:** 1.0.0
 
 --------------------
+
+
+### importFromJson(...)
+
+```typescript
+importFromJson(jsonstring: string) => Promise<number>
+```
+
+Import a database From a JSON
+
+| Param            | Type                | Description |
+| ---------------- | ------------------- | ----------- |
+| **`jsonstring`** | <code>string</code> | string      |
+
+**Returns:** <code>Promise&lt;number&gt;</code>
+
+**Since:** 1.1.0
+
+--------------------
+
+
+### isJsonValid(...)
+
+```typescript
+isJsonValid(jsonstring: string) => Promise<boolean>
+```
+
+Check the validity of a JSON Object
+
+| Param            | Type                | Description |
+| ---------------- | ------------------- | ----------- |
+| **`jsonstring`** | <code>string</code> | string      |
+
+**Returns:** <code>Promise&lt;boolean&gt;</code>
+
+**Since:** 1.1.0
+
+--------------------
+
+
+### exportToJson()
+
+```typescript
+exportToJson() => Promise<JsonStore>
+```
+
+Export the given database to a JSON Object
+
+**Returns:** <code>Promise&lt;<a href="#jsonstore">JsonStore</a>&gt;</code>
+
+**Since:** 1.1.0
+
+--------------------
+
+
+### Interfaces
+
+
+#### JsonStore
+
+| Prop            | Type                     | Description                                                  |
+| --------------- | ------------------------ | ------------------------------------------------------------ |
+| **`database`**  | <code>string</code>      | The database name                                            |
+| **`encrypted`** | <code>boolean</code>     | Set to true (database encryption) / false iOS & Android only |
+| **`tables`**    | <code>JsonTable[]</code> | * Array of Table (<a href="#jsontable">JsonTable</a>)        |
+
+
+#### JsonTable
+
+| Prop         | Type                                 | Description                                                                    |
+| ------------ | ------------------------------------ | ------------------------------------------------------------------------------ |
+| **`name`**   | <code>string</code>                  | The database name                                                              |
+| **`values`** | <code>capDataStorageOptions[]</code> | * Array of Values (<a href="#capdatastorageoptions">capDataStorageOptions</a>) |
+
+
+#### capDataStorageOptions
+
+| Prop        | Type                | Description                  |
+| ----------- | ------------------- | ---------------------------- |
+| **`key`**   | <code>string</code> | The data name                |
+| **`value`** | <code>string</code> | The data value when required |
 
 </docgen-api>

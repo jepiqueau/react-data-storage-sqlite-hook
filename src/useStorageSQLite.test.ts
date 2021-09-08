@@ -1,12 +1,51 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import { useStorageSQLite } from './useStorageSQLite';
 
+const isJsonValid = async (jsonObj: any): Promise<boolean> => {
+    const keyFirstLevel: string[] = ['database', 'encrypted', 'tables'];
+    const keyTableLevel: string[] = ['name', 'values'];
+    const keyValueLevel: string[] = ['key', 'value'];
+    const keys: string[] = Object.keys(jsonObj);
+    for (const key of keys) {
+        if (keyFirstLevel.indexOf(key) === -1) return false;
+        if( key === "tables") {
+            for (const table of jsonObj.tables) {
+                const tkeys: string[] = Object.keys(table);
+                for (const tkey of tkeys) {
+                    if (keyTableLevel.indexOf(tkey) === -1) return false;
+
+                    if(tkey === "values") {
+                        for (const value of table.values) {
+                            const vKeys: string[] = Object.keys(value);
+                            for (const vkey of vKeys) {
+                                if (keyValueLevel.indexOf(vkey) === -1) return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return true;
+
+}
+
 jest.mock('@capacitor/core', () => {
+      return {
+        Capacitor: {
+        isPluginAvailable: () => true,
+        getPlatform: () => 'ios',
+        platform: 'ios'
+      }
+    }
+});
+
+jest.mock('capacitor-data-storage-sqlite', () => {
     let mDatabases: any = {};
     let curDatabase: string = "";
     let curTable: string = "";
+    let mJsonObject: any = {};
     return {
-      Plugins: {
         CapacitorDataStorageSqlite: {
             openStore: async (options: any) => {
                 const database = options.database ? options.database : "storage"; 
@@ -26,7 +65,7 @@ jest.mock('@capacitor/core', () => {
                 }
                 curDatabase = database;
                 curTable = table;
-                return {result: true};             
+                return;             
             },
             setTable: async ({ table }: { table: string }) => { 
                 if (!Object.keys(mDatabases[curDatabase]).toString().includes(table)) { 
@@ -36,7 +75,7 @@ jest.mock('@capacitor/core', () => {
                     mDatabases[curDatabase] = mTables; 
                 }
                 curTable = table;
-                return {result: true, message:""};             
+                return;             
             },
             get: async ({ key }: { key: string }) => { 
                 try {
@@ -54,10 +93,10 @@ jest.mock('@capacitor/core', () => {
             remove: async ({ key }: { key: string }) => {
                 try {
                     delete mDatabases[curDatabase][curTable][key];
-                    return {result: true};             
+                    return;             
                 }
                 catch {
-                    return {result: false};             
+                    return;             
                 }
             },
             clear: async () => {
@@ -109,25 +148,40 @@ jest.mock('@capacitor/core', () => {
             deleteStore: async (options: any) => {
                 const database = options.database ? options.database : "storage";
                 if (!Object.keys(mDatabases).includes(database)) {
-                    return {result: false};
+                    return Promise.reject(`${database} does not exist`);
                 }
+
                 delete mDatabases[database];
                 if (database === curDatabase) curDatabase = "";
-                return {result: true};
+                return;
+            },
+            isJsonValid: async ({jsonstring}: { jsonstring: string }) => {
+                const jsonString: string = jsonstring;
+                const jsonObj: any = JSON.parse(jsonString);
+                const retB: boolean = await isJsonValid(jsonObj);
+                return {result: retB};
+            },
+            importFromJson: async ({jsonstring}: { jsonstring: string }) => {
+                const jsonString: string = jsonstring;
+                mJsonObject = JSON.parse(jsonString);
+                const retB: boolean = await isJsonValid(mJsonObject);
+                if( retB) {
+                    let totChanges: number = 0;
+                    for( const table of mJsonObject.tables) {
+                        totChanges += table.values.length;
+                    }
+                    return {changes: totChanges};
+                } else {
+                    return {message: "Must provide a valid JsonSQLite Object"};
+                }
+            },
+            exportToJson: async () => {
+                return {export: mJsonObject};
             },
         }
-      },
-      Capacitor: {
-        isPluginAvailable: () => true,
-        getPlatform: () => 'ios',
-        platform: 'ios'
-      }
     }
 });
-jest.mock('capacitor-data-storage-sqlite', () => {
-    return {
-    }
-});
+
 
 it('Gets and sets storage values from default', async () => {
     const r = renderHook(() => useStorageSQLite());
@@ -142,45 +196,49 @@ it('Gets and sets storage values from default', async () => {
     
         const { openStore, setTable, getItem, setItem, removeItem, clear,
         isKey, getAllKeys, getAllValues, getAllKeysValues, deleteStore} = result;
-        let res:boolean = await openStore({});
-        expect(res).toBe(true);
- 
-        await setItem('name', 'Max');
+        try {
+            await openStore({});
+     
+            await setItem('name', 'Max');
     
-        let name = await getItem('name');
-        expect(name).toEqual('Max');
-        res = await isKey('name');
-        expect(res).toBe(true);
-        res = await removeItem('name');
-        expect(res).toBe(true);
-        name = await getItem('name');
-        expect(name).toBeNull();
-        res = await isKey('name');
-        expect(res).toBe(false);
-    
-        await setItem('name', 'Jeep');
-        await setItem('session', 'Opened');
-        await setItem('email', 'jeep@example.com');
-        const keys = await getAllKeys();
-        expect(keys.length).toEqual(3);
-        expect(keys).toStrictEqual(['name','session','email']);
-        const values = await getAllValues();
-        expect(values.length).toEqual(3);
-        expect(values).toStrictEqual(['Jeep','Opened','jeep@example.com']);
-        const keysvalues = await getAllKeysValues();
-        expect(keysvalues.length).toEqual(3);
-        expect(keysvalues).toStrictEqual([{key:'name',value:'Jeep'},{key:'session',value:'Opened'},{key:'email',value:'jeep@example.com'}]);
-        res = await clear();
-        expect(res).toBeTruthy();
-        name = await getItem('name');
-        expect(name).toBeNull();
-        res = await deleteStore({});
-        expect(res).toBeTruthy();
-        res = await deleteStore({database:"foo"});
-        expect(res).toBeFalsy();
-
+            let name = await getItem('name');
+            expect(name).toEqual('Max');
+            let res = await isKey('name');
+            expect(res).toBe(true);
+            await removeItem('name');
+            name = await getItem('name');
+        } catch(err) {
+            expect(err).toEqual("no returned value for key name");
+        }
+        try {
+            let res = await isKey('name');
+            expect(res).toBe(false);
+            await setItem('name', 'Jeep');
+            await setItem('session', 'Opened');
+            await setItem('email', 'jeep@example.com');
+            const keys = await getAllKeys();
+            expect(keys.length).toEqual(3);
+            expect(keys).toStrictEqual(['name','session','email']);
+            const values = await getAllValues();
+            expect(values.length).toEqual(3);
+            expect(values).toStrictEqual(['Jeep','Opened','jeep@example.com']);
+            const keysvalues = await getAllKeysValues();
+            expect(keysvalues.length).toEqual(3);
+            expect(keysvalues).toStrictEqual([{key:'name',value:'Jeep'},{key:'session',value:'Opened'},{key:'email',value:'jeep@example.com'}]);
+            await clear();
+            await getItem('name');
+        } catch(err) {
+            expect(err).toEqual("no returned value for key name");
+            
+        }
+        try {
+            await deleteStore({});
+            await deleteStore({database:"foo"});
+        } catch (err) {
+            expect(err).toEqual("foo does not exist");
+        }
     });
-});    
+});  
 it('Gets and sets storage values from "myTest" Store & "myStore" Table', async () => {
     const r = renderHook(() => useStorageSQLite());
     
@@ -194,27 +252,27 @@ it('Gets and sets storage values from "myTest" Store & "myStore" Table', async (
     
         const { openStore, setTable, getItem, setItem, removeItem, clear,
         isKey, getAllKeys, getAllValues, getAllKeysValues, deleteStore} = result;
-        let res:boolean = await openStore({database: 'myTest', table: 'myStore'});
-        expect(res).toBe(true);
-    
-        await setItem('name', 'Max');
-    
-        let name = await getItem('name');
-        expect(name).toEqual('Max');
-    
-        res = await removeItem('name');
-        expect(res).toBe(true);
-        name = await getItem('name');
-        expect(name).toBeNull();
-    
-        await setItem('name', 'Jeep');
-        res = await clear();
-        expect(res).toBeTruthy();
-        name = await getItem('name');
-        expect(name).toBeNull();
+        try {
+            await openStore({database: 'myTest', table: 'myStore'});    
+            await setItem('name', 'Max');
+
+            let name = await getItem('name');
+            expect(name).toEqual('Max');
+        
+            await removeItem('name');
+            name = await getItem('name');
+        } catch(err) {
+            expect(err).toEqual("no returned value for key name");
+        }
+        try {
+            await setItem('name', 'Jeep');
+            await clear();
+            let name = await getItem('name');
+        } catch(err) {
+            expect(err).toEqual("no returned value for key name");
+        }
     }); 
 }); 
- 
 it('Gets and sets storage values from one store & two tables', async () => {
     const r = renderHook(() => useStorageSQLite());
     
@@ -228,50 +286,95 @@ it('Gets and sets storage values from one store & two tables', async () => {
     
         const { openStore, setTable, getItem, setItem, removeItem, clear,
         isKey, getAllKeys, getAllValues, getAllKeysValues, deleteStore} = result;
-        let res:boolean = await openStore({database: 'myTest', table: 'myStore'});
-        expect(res).toBe(true);
+        try {
+            await openStore({database: 'myTest', table: 'myStore'});
     
-        await setItem('name', 'Max');
+            await setItem('name', 'Max');
+            let name = await getItem('name');
+            expect(name).toEqual('Max');
     
-        let name = await getItem('name');
-        expect(name).toEqual('Max');
-    
-        res = await removeItem('name');
-        expect(res).toBe(true);
-        name = await getItem('name');
-        expect(name).toBeNull();
-    
-        await setItem('name', 'Jeep');
-        await setItem('email', 'jeep@example.com');
-        name = await getItem('name');
-        let email = await getItem('email');
-        expect(name).toEqual('Jeep');
-        expect(email).toEqual('jeep@example.com');
-        let retTable = await setTable('second');
-        expect(retTable.result).toBeTruthy();
-        expect(retTable.message).toEqual("");
-        await setItem('session', 'Opened');
-        await setItem('json', JSON.stringify({a: 5,b: 362.235,c:"hello World!"}));
-        let session = await getItem('session');
-        expect(session).toEqual('Opened');
-        let jsonString = await getItem('json');
-        if(jsonString != null) {
-            let json = JSON.parse(jsonString);
-            expect(json.a).toEqual(5);
-            expect(json.b).toEqual(362.235);
-            expect(json.c).toEqual("hello World!");    
+            await removeItem('name');
+            name = await getItem('name');
+        } catch(err) {
+            expect(err).toEqual("no returned value for key name");
         }
-        retTable = await setTable('myStore');
-        expect(retTable.result).toBeTruthy();
-        expect(retTable.message).toEqual("");
-        await setItem('mobile', '0123456789');
-        let mobile = await getItem('mobile');
-        expect(mobile).toEqual('0123456789');
-        const keysvalues = await getAllKeysValues();
-        expect(keysvalues.length).toEqual(3);
-        expect(keysvalues).toStrictEqual([{key:'name',value:'Jeep'},{key:'email',value:'jeep@example.com'},{key:'mobile',value:'0123456789'}]);
-        
+        try {
+    
+            await setItem('name', 'Jeep');
+            await setItem('email', 'jeep@example.com');
+            let name = await getItem('name');
+            let email = await getItem('email');
+            expect(name).toEqual('Jeep');
+            expect(email).toEqual('jeep@example.com');
+            await setTable('second');
+            await setItem('session', 'Opened');
+            await setItem('json', JSON.stringify({a: 5,b: 362.235,c:"hello World!"}));
+            let session = await getItem('session');
+            expect(session).toEqual('Opened');
+            let jsonString = await getItem('json');
+            if(jsonString != null) {
+                let json = JSON.parse(jsonString);
+                expect(json.a).toEqual(5);
+                expect(json.b).toEqual(362.235);
+                expect(json.c).toEqual("hello World!");    
+            }
+            await setTable('myStore');
+            await setItem('mobile', '0123456789');
+            let mobile = await getItem('mobile');
+            expect(mobile).toEqual('0123456789');
+            const keysvalues = await getAllKeysValues();
+            expect(keysvalues.length).toEqual(3);
+            expect(keysvalues).toStrictEqual([{key:'name',value:'Jeep'},{key:'email',value:'jeep@example.com'},{key:'mobile',value:'0123456789'}]);
+        } catch {
+        }
 
-
-    });    
+    }); 
 }); 
+it('Gets and sets storage values Json Object', async () => {
+    const r = renderHook(() => useStorageSQLite());
+    const jsonData1 = {
+        database: "testImport",
+        encrypted: false,
+        tables: [
+          {
+            name: "myStore1",
+            values: [
+              {key: "test1", value: "my first test"},
+              {key: "test2", value: JSON.stringify({a: 10, b: 'my second test', c:{k:'hello',l: 15}})},
+            ]
+          },
+          {
+            name: "myStore2",
+            values: [
+              {key: "test1", value: "my first test in store2"},
+              {key: "test2", value: JSON.stringify({a: 20, b: 'my second test in store2 ', d:{k:'hello',l: 15}})},
+              {key: "test3", value: "100"},
+            ]
+          },
+        ]
+    }
+  
+    
+    await act(async () => {
+        const result = r.result.current;
+        const { isAvailable } = result;
+        expect(isAvailable).toBe(true);
+    });
+
+    await act(async () => {
+        const result = r.result.current;
+    
+        const { openStore, setTable, getAllKeysValues, isJsonValid,
+                importFromJson, exportToJson} = result;
+        let retB = await isJsonValid(JSON.stringify(jsonData1));
+        expect(retB).toBe(true);
+        let retChanges = await importFromJson(JSON.stringify(jsonData1));
+        expect(retChanges).toEqual(5);
+        let retJsonObject = await exportToJson();
+        expect(JSON.stringify(retJsonObject)).toStrictEqual(JSON.stringify(jsonData1));
+    }); 
+}); 
+ 
+ 
+
+
