@@ -218,7 +218,6 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
             await storageSQLite.closeStore({database});
             return Promise.resolve();
         } catch (err) {
-            console.log(`error: ${err}`)
             return Promise.reject(err);
         }
     }, []);
