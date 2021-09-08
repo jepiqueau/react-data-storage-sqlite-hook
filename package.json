@@ -13,6 +13,9 @@
     "Storage",
     "SQLite"
   ],
+  "files": [
+    "dist/"
+  ],
   "main": "dist/esm/index.js",
   "typings": "dist/esm/index.d.ts",
   "scripts": {
