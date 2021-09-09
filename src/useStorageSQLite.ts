@@ -282,7 +282,7 @@ export const useStorageSQLite = (): StorageSQLiteHook => {
             if (v && v.value) {
                     return Promise.resolve(v.value);
             } else {
-                return Promise.reject(`no returned value for key ${key}`);
+                return Promise.resolve(null);
             }
         } catch (err) {
             return Promise.reject(err);

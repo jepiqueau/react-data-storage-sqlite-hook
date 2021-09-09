@@ -1,4 +1,10 @@
-## 1.1.0 (2021-06-08)
+## 1.1.1 (2021-09-09)
+
+### Bug Fixes
+
+- fix getItem return null when no item
+
+## 1.1.0 (2021-09-08)
 
 ### Chores
 
