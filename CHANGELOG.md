@@ -1,3 +1,10 @@
+## 1.1.2 (2022-01-11)
+
+### Chores
+
+- @capacitor/core: update 3.3.4
+- capacitor-data-storage-sqlite: 3.3.4
+
 ## 1.1.1 (2021-09-09)
 
 ### Bug Fixes
