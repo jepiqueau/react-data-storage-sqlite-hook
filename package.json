@@ -47,27 +47,25 @@
     ]
   },
   "peerDependencies": {
-    "@capacitor/core": "^3.3.4",
-    "capacitor-data-storage-sqlite": "^3.3.4",
+    "@capacitor/core": "^3.4.3",
+    "capacitor-data-storage-sqlite": "^3.4.3",
     "react": "^17.0.2"
   },
   "devDependencies": {
-    "@capacitor/core": "^3.3.4",
+    "@capacitor/core": "^3.4.3",
     "@capacitor/docgen": "^0.0.18",
     "@testing-library/react-hooks": "^5.1.2",
     "@types/jest": "^27.0.2",
     "@types/react-test-renderer": "^17.0.1",
-    "capacitor-data-storage-sqlite": "3.3.4",
+    "capacitor-data-storage-sqlite": "^3.4.3",
     "conventional-changelog": "^3.1.24",
     "jest": "^27.3.0",
-    "np": "^7.5.0",
     "react": "^17.0.2",
     "react-app-polyfill": "^2.0.0",
     "react-test-renderer": "^17.0.2",
     "replace": "^1.2.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.7",
-    "typedoc": "^0.20.36",
     "typescript": "^4.0.5",
     "uglify-js": "^3.2.0"
   },

@@ -1,3 +1,10 @@
+## 1.1.3 (2022-03-13)
+
+### Chores
+
+- @capacitor/core: update 3.4.3
+- capacitor-data-storage-sqlite: 3.4.3
+
 ## 1.1.2 (2022-01-11)
 
 ### Chores
