@@ -1,6 +1,6 @@
 {
   "name": "react-data-storage-sqlite-hook",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "React Hook for Capacitor Data Storage SQLite",
   "repository": {
     "type": "git",
@@ -47,21 +47,21 @@
     ]
   },
   "peerDependencies": {
-    "@capacitor/core": "^4.0.0",
-    "react": "^17.0.2"
+    "@capacitor/core": "^5.0.0",
+    "react": "^18.0.0"
   },
   "devDependencies": {
-    "@capacitor/core": "^4.1.0",
+    "@capacitor/core": "^5.0.3",
     "@capacitor/docgen": "^0.0.18",
     "@testing-library/react-hooks": "^7.0.2",
     "@types/jest": "^27.4.1",
-    "@types/react-test-renderer": "^17.0.1",
-    "capacitor-data-storage-sqlite": "^4.0.1",
+    "@types/react-test-renderer": "^18.0.0",
+    "capacitor-data-storage-sqlite": "^5.0.1",
     "conventional-changelog": "^3.1.25",
     "jest": "^27.5.1",
-    "react": "^17.0.2",
-    "react-app-polyfill": "^2.0.0",
-    "react-test-renderer": "^17.0.2",
+    "react": "^18.2.0",
+    "react-app-polyfill": "^3.0.0",
+    "react-test-renderer": "^18.2.0",
     "replace": "^1.2.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.1.3",
