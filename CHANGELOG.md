@@ -1,3 +1,9 @@
+## 3.0.1 (2023-05-22)
+
+### Bug Fixes
+
+- fix readme maintenance 2023
+
 ## 3.0.0 (2023-05-22)
 
 ### Chores

@@ -5,7 +5,7 @@
 <br>
 <p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 4</strong></p><br>
 <p align="center">
-    <img src="https://img.shields.io/maintenance/yes/2022?style=flat-square" />
+    <img src="https://img.shields.io/maintenance/yes/2023?style=flat-square" />
     <a href="https://www.npmjs.com/package/react-data-storage-sqlite-hook"><img src="https://img.shields.io/npm/l/react-data-storage-sqlite-hook?style=flat-square" /></a>
 <br>
   <a href="https://www.npmjs.com/package/react-data-storage-sqlite-hook"><img src="https://img.shields.io/npm/dw/react-data-storage-sqlite-hook?style=flat-square" /></a>
