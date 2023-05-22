@@ -3,7 +3,7 @@
 <h3 align="center">React Hook for capacitor-data-storage-sqlite plugin</h3>
 <p align="center"><strong><code>react-data-storage-sqlite-hook</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 4</strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 5</strong></p><br>
 <p align="center">
     <img src="https://img.shields.io/maintenance/yes/2023?style=flat-square" />
     <a href="https://www.npmjs.com/package/react-data-storage-sqlite-hook"><img src="https://img.shields.io/npm/l/react-data-storage-sqlite-hook?style=flat-square" /></a>
